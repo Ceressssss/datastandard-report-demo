@@ -37,8 +37,7 @@ public class ReportServiceTest {
         Stream<Stream<String>> report = reportService.report(datastandard, "leaf");
         printBorder();
         report
-                .map(rowStream -> {
-                    // Convert the Stream<String> row into a formatted row, handling multi-line Groups cells
+                .forEach(rowStream -> {
                     List<String> cells = rowStream.toList();
                     String categoryName = String.format("%-" + 35 + "s", cells.get(0));
                     String attributeName = String.format("%-" + 35 + "s", cells.get(1));
@@ -52,15 +51,12 @@ public class ReportServiceTest {
                         if (i == 0) {
                             printRow(categoryName, attributeName, description, type, group);
                         } else {
-                            // For subsequent rows, print empty columns for non-Groups cells
+                            // Create empty cell row to handle newline in group cell
                             printRow("", "", "", "", group);
                         }
                     }
                     printBorder();
-
-                    return ""; // No need to return anything for this stream operation
-                })
-                .toList();
+                });
     }
 
     private static void printBorder() {
@@ -69,6 +65,7 @@ public class ReportServiceTest {
     }
 
     private static void printRow(String category, String attribute, String description, String type, String groups) {
+        // Handling empty cell values in case of newlines
         category = category.isEmpty() ? String.format("%-" + 35 + "s",category) : category;
         attribute = attribute.isEmpty() ? String.format("%-" + 35 + "s",attribute) : attribute;
         description = description.isEmpty() ? String.format("%-" + 35 + "s",description) : description;
